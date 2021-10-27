@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
-sealed class NoiseTexture : MonoBehaviour
+sealed class DirectCallTest : MonoBehaviour
 {
     [SerializeField] int _size = 256;
     [SerializeField] RawImage _target = null;
