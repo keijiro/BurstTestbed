@@ -16,7 +16,7 @@ sealed class IntrinsicsTest : MonoBehaviour
     static int CountBits(v128 v)
     {
         if (IsNeonSupported)
-            return vaddvq_u8(vcntq_s8(v));
+            return vaddvq_u8(vcntq_u8(v));
         else
             return CountBits(v.ULong0) + CountBits(v.ULong1);
     }
