@@ -1,11 +1,17 @@
-BurstDirectCallTest
--------------------
+BurstTestbed
+------------
 
 ![photo](https://i.imgur.com/IztZ3dml.jpg)
 
-This is a small Unity project that tests the Burst direct call feature that allows managed code to invoke burst-compiled functions without using a function pointer.
-See the following manual page for details.
+This repository contains some small samples for the [Unity Burst compiler].
 
-https://docs.unity3d.com/Packages/com.unity.burst@1.5/manual/docs/CSharpLanguageSupport_Lang.html#directly-calling-burst-compiled-code
+[Unity Burst compiler]:
+  https://docs.unity3d.com/Packages/com.unity.burst@latest
 
-This feature is only available on Burst 1.5 or later.
+At the moment, the following samples are included:
+
+- **DirectCallTest** shows how to use the [Burst direct call feature].
+- **SpanTest** shows use of `System.Span<T>` within a Burst function.
+
+[Burst direct call feature]:
+  https://docs.unity3d.com/Packages/com.unity.burst@1.6/manual/docs/CSharpLanguageSupport_Lang.html#directly-calling-burst-compiled-code
