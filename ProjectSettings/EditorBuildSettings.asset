@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Test.unity
+    path: Assets/NoiseTexture.unity
     guid: bc9fc8a0a8add4a998ad68826ec4898d
   m_configObjects: {}
