@@ -1,15 +1,17 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 [BurstCompile]
 sealed class SpanTest : MonoBehaviour
 {
     [SerializeField] int _size = 256;
     [SerializeField] RawImage _target = null;
+    [SerializeField] Text _label = null;
 
     Texture2D _texture;
 
@@ -19,11 +21,13 @@ sealed class SpanTest : MonoBehaviour
 
     unsafe void Update()
     {
+        var sw = new Stopwatch();
         using var buffer = new NativeArray<uint>(_size * _size, Allocator.Temp);
         var ptr = NativeArrayUnsafeUtility.GetUnsafePtr(buffer);
-        Fill(ptr, _size, Time.time);
+        sw.Start(); Fill(ptr, _size, Time.time); sw.Stop();
         _texture.LoadRawTextureData(buffer);
         _texture.Apply();
+        _label.text = $"Processing time: {sw.Elapsed.TotalMilliseconds} ms";
     }
 
     [BurstCompile]
