@@ -9,39 +9,39 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 sealed class Scrambler : MonoBehaviour
 {
     [SerializeField] Texture2D _source = null;
-    [SerializeField] RawImage[] _previews = null;
+    [SerializeField] RawImage[] _imageViews = null;
     [SerializeField] Text _label = null;
 
     const uint Key = 0xdeafbeef;
 
-    void Start()
+    unsafe void Start()
     {
-        var image = _source.GetPixels32();
-        var span = MemoryMarshal.Cast<Color32, uint>(new Span<Color32>(image));
+        var buffer = _source.GetPixels32();
         var sw = new Stopwatch();
 
-        // Scramble
-        sw.Start(); Scramble(span, Key); sw.Stop();
-        var scrambled = new Texture2D(_source.width, _source.height);
-        scrambled.SetPixels32(image);
-        scrambled.Apply();
+        fixed (uint* ptr = MemoryMarshal.Cast<Color32, uint>(buffer))
+        {
+            // Scramble
+            var scrambled = new Texture2D(_source.width, _source.height);
+            _imageViews[1].texture = scrambled;
 
-        // Unscramble
-        Scramble(span, Key);
-        var unscrambled = new Texture2D(_source.width, _source.height);
-        unscrambled.SetPixels32(image);
-        unscrambled.Apply();
+            sw.Start(); Scramble_Burst(ptr, buffer.Length, Key); sw.Stop();
 
-        // Output
-        _previews[0].texture = _source;
-        _previews[1].texture = scrambled;
-        _previews[2].texture = unscrambled;
+            scrambled.SetPixels32(buffer);
+            scrambled.Apply();
+
+            // Unscramble
+            var unscrambled = new Texture2D(_source.width, _source.height);
+            _imageViews[2].texture = unscrambled;
+
+            Scramble_Burst(ptr, buffer.Length, Key);
+
+            unscrambled.SetPixels32(buffer);
+            unscrambled.Apply();
+        }
+
+        _imageViews[0].texture = _source;
         _label.text = $"Processing time: {sw.Elapsed.TotalMilliseconds} ms";
-    }
-
-    unsafe public static void Scramble(Span<uint> image, uint key)
-    {
-        fixed (uint* ptr = image) Scramble_Burst(ptr, image.Length, key);
     }
 
     [BurstCompile]
