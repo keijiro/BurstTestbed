@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scrambler/Scrambler.unity
+    path: Assets/Scrambler.unity
     guid: 0ab4e6677669849029d1cbbb3a80e4b4
   - enabled: 1
     path: Assets/SpanTest.unity

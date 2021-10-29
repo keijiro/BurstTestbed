@@ -1,5 +1,6 @@
-using Unity.Mathematics;
 using System;
+using Unity.Mathematics;
+using Random = Unity.Mathematics.Random;
 
 static class ImageGenerator
 {
@@ -17,5 +18,14 @@ static class ImageGenerator
         for (var y = 0; y < size; y++)
             for (var x = 0; x < size; x++)
                 buffer[offs++] = GetPixel(x, y, time);
+    }
+}
+
+static class ImageScrambler
+{
+    public static void Scramble(Span<uint> image, uint key)
+    {
+        var r = new Random(key);
+        for (var i = 0; i < image.Length; i++) image[i] ^= r.NextUInt();
     }
 }
