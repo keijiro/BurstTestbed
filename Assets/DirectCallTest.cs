@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 [BurstCompile]
@@ -17,6 +18,8 @@ sealed class DirectCallTest : MonoBehaviour
 
     void Update()
     {
+        Profiler.BeginSample("Texture Generation");
+
         using var temp = new NativeArray<uint>(_size * _size, Allocator.Temp);
         var buffer = new NativeSlice<uint>(temp);
 
@@ -26,6 +29,8 @@ sealed class DirectCallTest : MonoBehaviour
         for (var y = 0; y < _size; y++)
             for (var x = 0; x < _size; x++)
                 buffer[offs++] = GetPixel(x, y, time);
+
+        Profiler.EndSample();
 
         _texture.LoadRawTextureData(temp);
         _texture.Apply();

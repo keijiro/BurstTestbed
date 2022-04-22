@@ -2,15 +2,14 @@ using System;
 using System.Runtime.InteropServices;
 using Unity.Burst;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
-using Stopwatch = System.Diagnostics.Stopwatch;
 
 [BurstCompile]
 sealed class SpanTest : MonoBehaviour
 {
     [SerializeField] int _size = 256;
     [SerializeField] RawImage _imageView = null;
-    [SerializeField] Text _label = null;
 
     Texture2D _texture;
     Color32[] _buffer;
@@ -23,17 +22,15 @@ sealed class SpanTest : MonoBehaviour
 
     unsafe void Update()
     {
-        var sw = new Stopwatch();
+        Profiler.BeginSample("Texture Generation");
 
         fixed (uint* ptr = MemoryMarshal.Cast<Color32, uint>(_buffer))
-        {
-            sw.Start(); Fill_Burst(ptr, _size, Time.time); sw.Stop();
-        }
+            Fill_Burst(ptr, _size, Time.time);
+
+        Profiler.EndSample();
 
         _texture.SetPixels32(_buffer);
         _texture.Apply();
-
-        _label.text = $"Processing time: {sw.Elapsed.TotalMilliseconds} ms";
     }
 
     [BurstCompile]

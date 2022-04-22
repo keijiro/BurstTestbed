@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 sealed class ParallelizationTest : MonoBehaviour
@@ -17,6 +18,8 @@ sealed class ParallelizationTest : MonoBehaviour
 
     void Update()
     {
+        Profiler.BeginSample("Texture Generation");
+
         using var temp =
           new NativeArray<uint>(_size * _size, Allocator.TempJob);
 
@@ -27,6 +30,8 @@ sealed class ParallelizationTest : MonoBehaviour
             Buffer = temp };
 
         job.Schedule(_size * _size, 64).Complete();
+
+        Profiler.EndSample();
 
         _texture.LoadRawTextureData(temp);
         _texture.Apply();
