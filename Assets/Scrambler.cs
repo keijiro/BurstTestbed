@@ -13,36 +13,38 @@ sealed class Scrambler : MonoBehaviour
 
     const uint Key = 0xdeafbeef;
 
-    unsafe void Start()
+    Texture2D _scrambled, _unscrambled;
+
+    void Start()
+    {
+        _scrambled = new Texture2D(_source.width, _source.height);
+        _unscrambled = new Texture2D(_source.width, _source.height);
+
+        _imageViews[0].texture = _source;
+        _imageViews[1].texture = _scrambled;
+        _imageViews[2].texture = _unscrambled;
+    }
+
+    unsafe void Update()
     {
         var buffer = _source.GetPixels32();
 
         fixed (uint* ptr = MemoryMarshal.Cast<Color32, uint>(buffer))
         {
             // Scramble
-            var scrambled = new Texture2D(_source.width, _source.height);
-            _imageViews[1].texture = scrambled;
-
             Profiler.BeginSample("Scrambling");
             Scramble_Burst(ptr, buffer.Length, Key);
             Profiler.EndSample();
-
-            scrambled.SetPixels32(buffer);
-            scrambled.Apply();
+            _scrambled.SetPixels32(buffer);
+            _scrambled.Apply();
 
             // Unscramble
-            var unscrambled = new Texture2D(_source.width, _source.height);
-            _imageViews[2].texture = unscrambled;
-
             Profiler.BeginSample("Unscrambling");
             Scramble_Burst(ptr, buffer.Length, Key);
             Profiler.EndSample();
-
-            unscrambled.SetPixels32(buffer);
-            unscrambled.Apply();
+            _unscrambled.SetPixels32(buffer);
+            _unscrambled.Apply();
         }
-
-        _imageViews[0].texture = _source;
     }
 
     [BurstCompile]
